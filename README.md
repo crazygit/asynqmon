@@ -37,6 +37,13 @@ You can download the release binary for your system from the [releases page](htt
 
 ### Docker image
 
+Build multi platform images
+
+```bash
+docker build --platform linux/amd64,linux/arm64 -t crazygit/asynqmon:0.7 .
+docker pull crazygit/asynqmon:0.7
+```
+
 To pull the Docker image:
 
 ```bash

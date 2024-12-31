@@ -18,14 +18,17 @@ RUN apk add --update nodejs npm && \
 COPY ui .
 
 # Run yarn scripts (install & build).
-RUN yarn install && yarn build
+RUN yarn install --network-timeout 600000 && yarn build
 
 #
 # Second stage: 
 # Building a backend.
 #
 
-FROM golang:1.18-alpine AS backend
+FROM --platform=$BUILDPLATFORM golang:1.18-alpine AS backend
+
+ARG TARGETOS
+ARG TARGETARCH
 
 # Move to a working directory (/build).
 WORKDIR /build
@@ -41,7 +44,7 @@ COPY . .
 COPY --from=frontend ["/static/build", "ui/build"]
 
 # Set necessary environmet variables needed for the image and build the server.
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+ENV CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH}
 
 # Run go build (with ldflags to reduce binary size).
 RUN go build -ldflags="-s -w" -o asynqmon ./cmd/asynqmon
